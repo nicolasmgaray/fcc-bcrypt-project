@@ -28,9 +28,20 @@ console.log(hash,result)
 //END_SYNC
 
 app.get('/', async (req, res) => {
-    if(!req.query.word) return res.json({error:"Add param 'word' as query parameter."})
-    let hash= await bcrypt.hash(req.query.word, saltRounds);
-    res.json({word:req.query.word,hash: hash})
+  
+    if(!req.query.word && !req.query.hash) return res.json({error:"Add param 'word' or params 'word' + 'hash' as query parameter/s."})
+  
+    if(!req.query.word && req.query.hash) return res.json({error:"Need param 'word' to compare"})
+  
+    if(req.query.hash) {
+      let result =  await bcrypt.compare(req.query.word, req.query.hash);
+      return res.json({word:req.query.word,hash: req.query.hash, result: result ? 'Match' : 'No Match'})
+    }
+    else{
+       let hash= await bcrypt.hash(req.query.word, saltRounds);
+       res.json({word:req.query.word,hash: hash})
+    }
+   
 })
 
 app.listen(process.env.PORT || 3000, () => {});
