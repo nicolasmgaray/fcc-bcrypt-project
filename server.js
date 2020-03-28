@@ -27,5 +27,10 @@ let result =   bcrypt.compareSync(myPlaintextPassword, hash);
 console.log(hash,result)
 //END_SYNC
 
+app.get('/', async (req, res) => {
+    if(!req.query.word) return res.json({error:"Add param 'word' as query parameter."})
+    let hash= await bcrypt.hash(req.query.word, saltRounds);
+    res.json({word:req.query.word,hash: hash})
+})
 
 app.listen(process.env.PORT || 3000, () => {});
